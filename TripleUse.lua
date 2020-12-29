@@ -50,8 +50,5 @@ end
 
 
 for i = 1, #btnFunc do
-	ipc.log(btnFunc[i][1] .. " " .. btnFunc[i][2] .. " " .. i)
 	event.button(btnFunc[i][1], btnFunc[i][2], i, "buttonpress")
 end
-
---assert(loadstring(btnFunc[1][5].."()"))()
