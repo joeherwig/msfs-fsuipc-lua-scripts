@@ -1,11 +1,22 @@
 interval = 500 -- 1/2 second press, gap, press limits
 ignorepress = false
 
+--[[ 
+	The following files are included using "dofile" to ensure that the functions you want to assign / call within the TripleUseAssignments.lua are available. 
+	The Examples listed in here refer to teh new MSFS2020 where LINDA (https://www.avsim.com/forums/forum/427-linda-downloads/) is used.
+	LINDA (Lua Integrated Non complex Device Assignments) brings LUA scripts that map FSUIPC Offsets and even more logic to nice and 
+	self descriptive function names, which makes it much easier to assign them and even at a later point simply understand the assignments.
+
+	In Case you want to get it running for other Simulators like P3D, FSX etc. you have to refer the related Function lists here.
+	Of course TripleUse does not require to run LINDA to refer to those script files. You can also write and add your own.
+	For me it was simply convenient to use the already made ones which saved me a lot of time.
+]]--
 dofile([[.\LINDA\system\common.lua]])
 dofile([[.\LINDA\libs\lib-msfs.lua]])
 dofile([[.\LINDA\libs\lib-fsxcontrols.lua]])
 dofile([[.\TripleUseAssignments.lua]])
 
+-- used to have a placeholder in case you do not want to assign something in the TripleUseAssignments.lua for some function. In that case just assign "ignore".
 function ignore ()
 end
 
@@ -36,14 +47,14 @@ function buttonpress(j, b, i)
 		-- First press / release counts: see if there's another
 		if timebutton(j, b, true) then
 			-- got another press in time, look for release
-			if timebutton(j, b, false) then  -- this was a double press, CS6
+			if timebutton(j, b, false) then  -- this was a double press
 				assert(loadstring(btnFunc[i][4].."()"))()
 			end
-  	    else  -- This was a single press, send CS7
+  	    else  -- This was a single press
 			assert(loadstring(btnFunc[i][3].."()"))()
             ignorepress = false
 		end
-	else  -- This was a single long press, send CS2
+	else  -- This was a single long press
 		assert(loadstring(btnFunc[i][5].."()"))()
   end
 end
