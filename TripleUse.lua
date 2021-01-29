@@ -6,18 +6,21 @@ ignorepress = false
 	The Examples listed in here refer to teh new MSFS2020 where LINDA (https://www.avsim.com/forums/forum/427-linda-downloads/) is used.
 	LINDA (Lua Integrated Non complex Device Assignments) brings LUA scripts that map FSUIPC Offsets and even more logic to nice and 
 	self descriptive function names, which makes it much easier to assign them and even at a later point simply understand the assignments.
-
 	In Case you want to get it running for other Simulators like P3D, FSX etc. you have to refer the related Function lists here.
 	Of course TripleUse does not require to run LINDA to refer to those script files. You can also write and add your own.
 	For me it was simply convenient to use the already made ones which saved me a lot of time.
 ]]--
+
+-- Common functions needed, when you want to refer to the lib-msfs and lim-fsxcontrols functions.
 dofile([[.\LINDA\system\common.lua]])
+-- The function definitions as provided with LINDA. 
 dofile([[.\LINDA\libs\lib-msfs.lua]])
 dofile([[.\LINDA\libs\lib-fsxcontrols.lua]])
+-- The assignments of functions to your game device buttons itself
 dofile([[.\TripleUseAssignments.lua]])
 
--- used to have a placeholder in case you do not want to assign something in the TripleUseAssignments.lua for some function. In that case just assign "ignore".
-function ignore ()
+-- Used to have a placeholder in case you do not want to assign something in the TripleUseAssignments.lua for some function. In that case just assign "ignore". As an "ignore" function did not exist in the above Function libs, i just added it here.
+function ignore ()	
 end
 
 local function timebutton(joy, btn, test)
