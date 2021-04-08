@@ -14,7 +14,8 @@
 
 
 btnFunc = {
-    { 3, 7, "DeIce_PITOT_on", "ignore", "DeIce_PITOT_off"},
+    { 3, 13, "DeIce_PITOT_on", "ignore", "DeIce_PITOT_off"},
     { 5, 3, "G1000_MFD_SOFTKEY12", "ignore", "G1000_MFD_SOFTKEY11"},
-    { 3, 9, "MasterCaution_reset", "ignore", "MasterWarning_reset"} 
+    { 3, 9, "MasterCaution_reset", "ignore", "MasterWarning_reset"} ,
+    { 3, 22, "HDG_Mode_Managed", "ignore", "HDG_Mode_Selected"} 
 }

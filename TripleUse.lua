@@ -1,29 +1,15 @@
 interval = 500 -- 1/2 second press, gap, press limits
 ignorepress = false
 
---[[ 
-	The following files are included using "dofile" to ensure that the functions you want to assign / call within the TripleUseAssignments.lua are available. 
-	The Examples listed in here refer to teh new MSFS2020 where LINDA (https://www.avsim.com/forums/forum/427-linda-downloads/) is used.
-	LINDA (Lua Integrated Non complex Device Assignments) brings LUA scripts that map FSUIPC Offsets and even more logic to nice and 
-	self descriptive function names, which makes it much easier to assign them and even at a later point simply understand the assignments.
-	In Case you want to get it running for other Simulators like P3D, FSX etc. you have to refer the related Function lists here.
-	Of course TripleUse does not require to run LINDA to refer to those script files. You can also write and add your own.
-	For me it was simply convenient to use the already made ones which saved me a lot of time.
-]]--
-
--- Common functions needed, when you want to refer to the lib-msfs and lim-fsxcontrols functions.
 dofile([[.\LINDA\system\common.lua]])
--- The function definitions as provided with LINDA. 
-dofile([[.\LINDA\libs\lib-msfs.lua]])
 dofile([[.\LINDA\libs\lib-fsxcontrols.lua]])
--- The assignments of functions to your game device buttons itself
 dofile([[.\TripleUseAssignments.lua]])
+dofile([[.\LINDA\libs\lib-msfs.lua]])
 
--- Used to have a placeholder in case you do not want to assign something in the TripleUseAssignments.lua for some function. In that case just assign "ignore". As an "ignore" function did not exist in the above Function libs, i just added it here.
-function ignore ()	
+function ignore ()
 end
 
-local function timebutton(joy, btn, test)
+function timebutton(joy, btn, test)
   ignorepress = true
   while true do
 		time2 = ipc.elapsedtime()
@@ -38,8 +24,30 @@ local function timebutton(joy, btn, test)
 	 	ipc.sleep(20)
 	end
 end
+---------------------------------------------------------
+-- New function added below and called by funtion buttonpress()
+-- Determine index into buttonpress() based on Joy# (j)and Button# (b)
+-- and then call the FSX or MSFS control defined in "btnFunc" table
+-- "typePress" is either single, double or long as press 
+--  as determined in "function buttonpress"
+-- 
+--
+function sendFSControl(j,b,typePress)
+    --DspShow(j,b)
+	for key, value in pairs(btnFunc) do
+		if value[1] == j and value[2] == b then
+			assert(loadstring(value[typePress].."()"))()
+		end	
+	end
+end	
 
+---------------------------------------------------------
 function buttonpress(j, b, i)
+--
+-- note: the "i" parameter returned is "downup" state of the button
+-- it is not an index pointing to which button was pressed
+-- see FSUIPC Lua Library Document page 24 for details
+--
 	if ignorepress then
 		ignorepress = false
 		return
@@ -50,19 +58,43 @@ function buttonpress(j, b, i)
 		-- First press / release counts: see if there's another
 		if timebutton(j, b, true) then
 			-- got another press in time, look for release
-			if timebutton(j, b, false) then  -- this was a double press
-				assert(loadstring(btnFunc[i][4].."()"))()
+			if timebutton(j, b, false) then
+			    -- This was a double press, CS6
+				-- replace original line: "assert(loadstring(btnFunc[i][4].."()"))()"
+				-- with this new line
+				-----------------------------------------
+				sendFSControl(j,b,4)
+				-----------------------------------------
 			end
-  	    else  -- This was a single press
-			assert(loadstring(btnFunc[i][3].."()"))()
-            ignorepress = false
+		else  -- This was a single press, send CS7
+			  -- replace original line: "assert(loadstring(btnFunc[i][3].."()"))()"
+			  -- with the following new line
+			--------------------------------------------- 
+			sendFSControl(j,b,3)
+			--------------------------------------------- 	
+			ignorepress = false
 		end
-	else  -- This was a single long press
-		assert(loadstring(btnFunc[i][5].."()"))()
-  end
+	else  -- This was a single long press, send CS2
+		  -- replace original line: "assert(loadstring(btnFunc[i][5].."()"))()"
+		  -- with the following new new
+		-------------------------------------------------  
+		sendFSControl(j,b,5)
+		-------------------------------------------------
+	end
 end
 
 
+
 for i = 1, #btnFunc do
-	event.button(btnFunc[i][1], btnFunc[i][2], i, "buttonpress")
+	-- replace original line "event.button(btnFunc[k][1], btnFunc[k][2], i, "buttonpress")"
+	-- with the following new line
+	-- the third parameter ("i") of event.button function is "downup" and can only be = 1,2,3 or ommitted.  
+	-- it specifies whether to trigger on a press (=1 or omitted) , a release (=2) or either press or release (=3)
+	-- so the new line set downup = 1 detect a button press
+	-- see FSUIPC Lua Library document, page 24 for details
+	
+    -- ipc.log(" +-+-+- index " .. i .. " btn " .. btnFunc[i][1])
+	-----------------------------------------------------
+	event.button(btnFunc[i][1], btnFunc[i][2], 1, "buttonpress")
+	-----------------------------------------------------
 end
